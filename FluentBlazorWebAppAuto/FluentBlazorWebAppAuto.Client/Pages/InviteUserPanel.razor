@@ -1,0 +1,70 @@
+﻿@implements IDialogContentComponent<InviteUserModel>    
+@using System.Net
+@inject NavigationManager NavigationManager
+
+
+@rendermode InteractiveServer
+
+
+<FluentDialogBody>
+    <div class="col-8 border shadow p-2 form-control-sm">
+        <div class="p-2">
+            <div class="mb-3">
+                <FluentTextField @bind-Value="@Content.PrimaryEmail" Required>
+                    User Email Address
+                </FluentTextField>                
+            </div>
+            <div class="mb-3">
+                <FluentLabel>User Group</FluentLabel>
+                <FluentSelect Items=@userGroupOptions
+                              OptionText="@(i => i.Text)"
+                              OptionValue="@(i => i.Value)"
+                              OptionSelected="@(i => i.Selected)"
+                              @bind-Value="@Content.UserGroupId" />
+            </div>
+        </div>
+    </div>
+    <FluentStack Style="margin-top:24px;">
+        <FluentButton @onclick="@SaveAsync" Appearance="Appearance.Accent">Save</FluentButton>
+        <FluentButton @onclick="@CancelAsync" Appearance="Appearance.Accent">Cancel</FluentButton>
+
+    </FluentStack>
+</FluentDialogBody>
+
+
+@code {
+    [Parameter]    
+    public InviteUserModel Content { get; set; } = default!;   
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+   
+    List<Option<string>> userGroupOptions = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //if (ApplicationSessionStateContainer.IsOwner)
+        {
+            userGroupOptions = new()
+            {
+                { new Option<string> { Value = "1", Text = "Select User Group", Selected = true } },
+                { new Option<string> { Value = "OrgOwner", Text = "Organization Owner" } },
+                { new Option<string> { Value = "OrgAdmin", Text = "Organization Admin" } },
+                { new Option<string> { Value = "OrgContributor", Text = "Organization Contributor" } }              
+
+            };            
+        }
+        
+    }
+
+    private async Task SaveAsync()
+    {
+        await Dialog.CloseAsync(Content);
+    }
+    private async Task CancelAsync()
+    {
+        await Dialog.CancelAsync();
+    }
+   
+   
+}
